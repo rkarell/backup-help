@@ -5,8 +5,21 @@ import os
 import time
 import datetime
 
-def CompareDirectories(path1, path2):
+def readIgnores():
+    with open("ignore.txt") as file:
+        ignoreLines = file.readlines()
+    
+    ignorePaths = {}
+    for line in ignoreLines:
+        ignorePaths[line.rstrip()] = True
+    
+    return(ignorePaths)
+
+def CompareDirectories(path1, path2, ignorePaths):
     for item1 in path1.iterdir():
+        if str(item1) in ignorePaths:
+            continue
+
         found = False
         for item2 in path2.iterdir():
             if item1.name == item2.name:
@@ -27,6 +40,7 @@ def CompareDirectories(path1, path2):
 def main():
     path1 = sys.argv[1]
     path2 = sys.argv[2]
-    CompareDirectories(Path(path1), Path(path2))
+    ignorePaths = readIgnores()
+    CompareDirectories(Path(path1), Path(path2), ignorePaths)
     
 main()
